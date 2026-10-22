@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · Biblioteca Inteligente</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+  <section class="login-aside">
+    <a class="brand login-brand" href="#"><span class="brand-mark">b.</span><span class="brand-name">biblioteca<span>inteligente</span></span></a>
+    <div class="login-message">
+      <span class="eyebrow">UM LUGAR PARA DESCOBRIR</span>
+      <h1>Histórias novas.<br>Possibilidades <em>infinitas.</em></h1>
+      <p>Um espaço simples para cuidar do acervo, acompanhar empréstimos e manter o conhecimento circulando.</p>
+      <div class="login-quote">“Uma biblioteca é uma porta aberta para muitos mundos.”</div>
+    </div>
+    <div class="login-bottom">BIBLIOTECA INTELIGENTE <span>·</span> SISTEMA DE GESTÃO</div>
+  </section>
+  <main class="login-main">
+    <form class="login-card" method="post">
+      <div class="login-symbol">b.</div>
+      <span class="eyebrow">BEM-VINDO DE VOLTA</span>
+      <h2>Acesse sua conta</h2>
+      <p class="login-subtitle">Entre para continuar gerenciando sua biblioteca.</p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+      {% endwith %}
+      <label for="usuario">Usuário</label>
+      <input id="usuario" name="usuario" autocomplete="username" placeholder="Seu usuário" required autofocus>
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+      <button class="btn btn-primary login-submit" type="submit">Entrar no sistema <span>→</span></button>
+      <p class="login-hint">Acesso local de demonstração: <strong>admin</strong> / <strong>biblioteca123</strong></p>
+    </form>
+  </main>
+</body>
+</html>

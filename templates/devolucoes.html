@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading compact-heading"><div><span class="eyebrow">RETORNO AO ACERVO</span><h1>Devoluções</h1><p>Registre a devolução e deixe o livro disponível novamente.</p></div></div>
+<section class="panel form-panel"><div class="panel-heading"><div><span class="eyebrow">FINALIZAR EMPRÉSTIMO</span><h2>Registrar devolução</h2></div><span class="count-badge">{{ rows|length }} ativos</span></div>
+<form method="post" class="record-form loan-form"><div class="field field-wide"><label for="id_emprestimo">Empréstimo ativo <span>*</span></label><select id="id_emprestimo" name="id_emprestimo" required><option value="">Selecione aluno e livro</option>{% for row in rows %}<option value="{{ row.ID_EMPRESTIMO }}">#{{ row.ID_EMPRESTIMO }} · {{ row.ALUNO }} — {{ row.LIVRO }}</option>{% endfor %}</select></div>
+<div class="field"><label for="data">Data da devolução</label><input id="data" type="date" name="data" value="{{ today }}" required></div><div class="form-actions"><button class="btn btn-primary" type="submit" {% if not rows %}disabled{% endif %}>Confirmar devolução <span>→</span></button></div></form></section>
+<section class="panel records-panel"><div class="panel-heading"><div><span class="eyebrow">PENDENTES DE RETORNO</span><h2>Empréstimos ativos</h2></div></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Aluno</th><th>Livro</th><th>Data do empréstimo</th></tr></thead><tbody>{% for row in rows %}<tr><td>#{{ row.ID_EMPRESTIMO }}</td><td class="primary-cell">{{ row.ALUNO }}</td><td>{{ row.LIVRO }}</td><td>{{ row.DATA_EMPREST|brdate }}</td></tr>{% else %}<tr><td colspan="4" class="empty-state">Nenhum empréstimo aguardando devolução.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

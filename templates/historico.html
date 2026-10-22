@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading compact-heading"><div><span class="eyebrow">CONSULTA E RASTREABILIDADE</span><h1>Histórico</h1><p>Consulte empréstimos e devoluções registrados no sistema.</p></div></div>
+<section class="panel records-panel"><div class="panel-heading"><div><span class="eyebrow">TODAS AS MOVIMENTAÇÕES</span><h2>Histórico completo <span class="count-badge">{{ rows|length }}</span></h2></div>
+<form class="search-form" method="get"><input name="q" value="{{ search_term }}" placeholder="Aluno, livro ou status"><button class="btn btn-outline">Buscar</button>{% if search_term %}<a class="clear-search" href="{{ url_for('historico') }}">Limpar</a>{% endif %}</form></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Aluno</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Valor</th><th>Status</th></tr></thead><tbody>{% for row in rows %}<tr><td>#{{ row.ID_EMPRESTIMO }}</td><td class="primary-cell">{{ row.ALUNO }}</td><td>{{ row.LIVRO }}</td><td>{{ row.DATA_EMPREST|brdate }}</td><td>{{ row.DATA_DEVOLUCAO|brdate }}</td><td>{{ row.VALOR|brl }}</td><td><span class="status {{ 'returned' if row.STATUS=='Devolvido' else 'borrowed' }}">{{ row.STATUS }}</span></td></tr>{% else %}<tr><td colspan="7" class="empty-state">Nenhum registro encontrado.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading compact-heading"><div><span class="eyebrow">CIRCULAÇÃO DO ACERVO</span><h1>Empréstimos</h1><p>Registre saídas e acompanhe os empréstimos realizados.</p></div></div>
+<section class="panel form-panel"><div class="panel-heading"><div><span class="eyebrow">NOVA MOVIMENTAÇÃO</span><h2>Registrar empréstimo</h2></div></div>
+<form method="post" class="record-form loan-form">
+<div class="field"><label for="id_aluno">Aluno <span>*</span></label><select id="id_aluno" name="id_aluno" required><option value="">Selecione um aluno</option>{% for s in students %}<option value="{{ s.ID_ALUNO }}">{{ s.NOME }} · #{{ s.ID_ALUNO }}</option>{% endfor %}</select></div>
+<div class="field"><label for="id_livro">Livro disponível <span>*</span></label><select id="id_livro" name="id_livro" required><option value="">Selecione um livro</option>{% for b in books %}<option value="{{ b.ID_LIVRO }}">{{ b.TITULO }}</option>{% endfor %}</select></div>
+<div class="field"><label for="data">Data do empréstimo</label><input id="data" type="date" name="data" value="{{ today }}" required></div>
+<div class="field"><label for="valor">Valor (R$)</label><input id="valor" type="number" name="valor" min="0" step="0.01" value="0.00" required></div>
+<div class="form-actions"><button class="btn btn-primary" type="submit" {% if not students or not books %}disabled{% endif %}>Registrar empréstimo <span>→</span></button></div>
+</form></section>
+<section class="panel records-panel"><div class="panel-heading"><div><span class="eyebrow">MOVIMENTAÇÕES</span><h2>Empréstimos registrados <span class="count-badge">{{ rows|length }}</span></h2></div>
+<form class="search-form" method="get"><input name="q" value="{{ search_term }}" placeholder="Buscar aluno ou livro"><button class="btn btn-outline">Buscar</button></form></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Aluno</th><th>Livro</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead><tbody>{% for row in rows %}<tr><td>#{{ row.ID_EMPRESTIMO }}</td><td class="primary-cell">{{ row.ALUNO }}</td><td>{{ row.LIVRO }}</td><td>{{ row.DATA_EMPREST|brdate }}</td><td>{{ row.VALOR|brl }}</td><td><span class="status {{ 'returned' if row.STATUS=='Devolvido' else 'borrowed' }}">{{ row.STATUS }}</span></td></tr>{% else %}<tr><td colspan="6" class="empty-state">Nenhum empréstimo encontrado.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

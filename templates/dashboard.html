@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div><span class="eyebrow">SEU ESPAÇO DE LEITURA</span><h1>Bom dia, {{ session.get('usuario','admin') }}.</h1>
+  <p>Veja o que está acontecendo com o acervo hoje.</p></div>
+  <div class="date-note"><span>HOJE</span><strong>{{ now_label or "Biblioteca em movimento" }}</strong></div>
+</div>
+<div class="stats-grid">
+  <article class="stat-card"><div class="stat-top"><span>Livros no acervo</span><span class="stat-icon sage">▤</span></div><strong>{{ counts.livros }}</strong><small>Total de títulos cadastrados</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Alunos cadastrados</span><span class="stat-icon sand">♙</span></div><strong>{{ counts.alunos }}</strong><small>Leitores registrados</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Empréstimos ativos</span><span class="stat-icon blue">⇄</span></div><strong>{{ counts.ativos }}</strong><small>Livros fora do acervo</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Disponíveis</span><span class="stat-icon green">✓</span></div><strong>{{ counts.disponiveis }}</strong><small>Prontos para empréstimo</small></article>
+</div>
+<div class="dashboard-grid">
+  <section class="panel recent-panel">
+    <div class="panel-heading"><div><span class="eyebrow">ACOMPANHAMENTO</span><h2>Movimentações recentes</h2></div><a class="text-link" href="{{ url_for('historico') }}">Ver histórico <span>→</span></a></div>
+    <div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Livro</th><th>Data</th><th>Status</th></tr></thead><tbody>
+    {% for item in recent %}
+      <tr><td class="primary-cell">{{ item.ALUNO }}</td><td>{{ item.LIVRO }}</td><td>{{ item.DATA_EMPREST|brdate }}</td><td><span class="status {{ 'returned' if item.STATUS=='Devolvido' else 'borrowed' }}">{{ item.STATUS }}</span></td></tr>
+    {% else %}<tr><td colspan="4" class="empty-state">Ainda não há movimentações registradas.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <aside class="panel shortcuts-panel"><span class="eyebrow">ATALHOS</span><h2>O que você precisa fazer?</h2>
+    <a class="shortcut" href="{{ url_for('livros') }}"><span class="shortcut-icon">＋</span><span><strong>Cadastrar um livro</strong><small>Adicione um título ao acervo</small></span><b>→</b></a>
+    <a class="shortcut" href="{{ url_for('alunos') }}"><span class="shortcut-icon">♙</span><span><strong>Novo aluno</strong><small>Registre um leitor</small></span><b>→</b></a>
+    <a class="shortcut" href="{{ url_for('emprestimos') }}"><span class="shortcut-icon">⇄</span><span><strong>Novo empréstimo</strong><small>Registre a saída de um livro</small></span><b>→</b></a>
+    <a class="shortcut" href="{{ url_for('devolucoes') }}"><span class="shortcut-icon">↶</span><span><strong>Registrar devolução</strong><small>Atualize a disponibilidade</small></span><b>→</b></a>
+  </aside>
+</div>
+{% endblock %}

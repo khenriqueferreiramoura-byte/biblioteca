@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · Biblioteca Inteligente</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell" id="appShell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('inicio') }}"><span class="brand-mark">b.</span><span class="brand-name">biblioteca<span>inteligente</span></span></a>
+    <div class="nav-label">ESPAÇO DE TRABALHO</div>
+    <nav class="nav">
+      <a class="{{ 'active' if page=='inicio' else '' }}" href="{{ url_for('inicio') }}"><span class="nav-icon">⌂</span><span>Visão geral</span></a>
+      <a class="{{ 'active' if page=='livros' else '' }}" href="{{ url_for('livros') }}"><span class="nav-icon">▤</span><span>Acervo de livros</span></a>
+      <a class="{{ 'active' if page=='autores' else '' }}" href="{{ url_for('autores') }}"><span class="nav-icon">✎</span><span>Autores</span></a>
+      <a class="{{ 'active' if page=='alunos' else '' }}" href="{{ url_for('alunos') }}"><span class="nav-icon">♙</span><span>Alunos</span></a>
+      <div class="nav-label nav-label-spaced">CIRCULAÇÃO</div>
+      <a class="{{ 'active' if page=='emprestimos' else '' }}" href="{{ url_for('emprestimos') }}"><span class="nav-icon">⇄</span><span>Empréstimos</span></a>
+      <a class="{{ 'active' if page=='devolucoes' else '' }}" href="{{ url_for('devolucoes') }}"><span class="nav-icon">↶</span><span>Devoluções</span></a>
+      <a class="{{ 'active' if page=='historico' else '' }}" href="{{ url_for('historico') }}"><span class="nav-icon">◷</span><span>Histórico</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-note"><span class="note-dot"></span><span>Acervo organizado,<br>conhecimento acessível.</span></div>
+      <a class="logout" href="{{ url_for('sair') }}"><span class="nav-icon">↗</span><span>Sair do sistema</span></a>
+      <div class="version">BIBLIOTECA INTELIGENTE <span>v2.0</span></div>
+    </div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar">
+      <button class="icon-button menu-toggle" id="menuToggle" aria-label="Recolher menu">☰</button>
+      <div class="breadcrumb"><span>Biblioteca</span><span class="crumb-sep">/</span><strong>{{ title }}</strong></div>
+      <div class="top-actions">
+        <button class="icon-button" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">◐</button>
+        <span class="top-divider"></span>
+        <div class="user-chip"><span class="avatar">{{ session.get('usuario','A')[:1]|upper }}</span><span><strong>{{ session.get('usuario','admin') }}</strong><small>Administrador</small></span></div>
+      </div>
+    </header>
+    <section class="page-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}<button type="button" class="flash-close" onclick="this.parentElement.remove()">×</button></div>
+        {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <footer class="page-footer">Biblioteca Inteligente <span>·</span> Organização que aproxima pessoas dos livros.</footer>
+    </section>
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

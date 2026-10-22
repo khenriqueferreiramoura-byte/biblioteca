@@ -1,0 +1,214 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading compact-heading">
+    <div>
+        <span class="eyebrow">CADASTRO E ORGANIZAÇÃO</span>
+        <h1>{{ title }}</h1>
+
+        <p>
+            {% if entity == 'livros' %}
+                Cuide dos títulos que fazem parte do acervo.
+            {% elif entity == 'autores' %}
+                Mantenha os dados dos autores organizados.
+            {% else %}
+                Gerencie os leitores da biblioteca.
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="panel form-panel">
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">
+                {{ 'EDITAR REGISTRO' if edit else 'NOVO REGISTRO' }}
+            </span>
+
+            <h2>
+                {{ 'Atualizar informações' if edit else
+                   ('Adicionar livro ao acervo' if entity == 'livros'
+                   else 'Preencher cadastro') }}
+            </h2>
+        </div>
+
+        {% if edit %}
+            <a class="btn btn-outline" href="{{ url_for(entity) }}">
+                Cancelar edição
+            </a>
+        {% endif %}
+    </div>
+
+    <form method="post" class="record-form">
+        <input
+            type="hidden"
+            name="action"
+            value="{{ 'update' if edit else 'create' }}"
+        >
+
+        <input
+            type="hidden"
+            name="id"
+            value="{{ edit[cfg['pk']] if edit else '' }}"
+        >
+
+        {% for key, column, label, field_type, required_field in cfg['fields'] %}
+            <div class="field {% if entity == 'livros' and key == 'capa_url' %}field-wide{% endif %}">
+                <label for="{{ key }}">
+                    {{ label }}
+                    {% if required_field %}
+                        <span>*</span>
+                    {% endif %}
+                </label>
+
+                <input
+                    id="{{ key }}"
+                    name="{{ key }}"
+                    type="{{ field_type }}"
+                    value="{{ edit[column] if edit and edit[column] is not none else '' }}"
+                    {% if required_field %}required{% endif %}
+                    {% if key == 'preco' %}min="0" step="0.01"{% endif %}
+                >
+
+                {% if key == 'capa_url' %}
+                    <small>
+                        Opcional. Cole o endereço de uma imagem de capa.
+                    </small>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">
+                {{ 'Salvar alterações' if edit else 'Cadastrar' }}
+                <span>→</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<section class="panel records-panel">
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">ACERVO DE DADOS</span>
+
+            <h2>
+                Registros cadastrados
+                <span class="count-badge">{{ rows|length }}</span>
+            </h2>
+        </div>
+
+        <form class="search-form" method="get">
+            <input
+                name="q"
+                value="{{ search_term }}"
+                placeholder="Pesquisar {{ 'livros' if entity == 'livros' else 'autores' if entity == 'autores' else 'alunos' }}..."
+                aria-label="Pesquisar"
+            >
+
+            <button class="btn btn-outline" type="submit">
+                Buscar
+            </button>
+
+            {% if search_term %}
+                <a class="clear-search" href="{{ url_for(entity) }}">
+                    Limpar
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    {% for header in cfg['headers'] %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+
+                    <th class="actions-heading">Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for key in cfg['keys'] %}
+
+                            {% if entity == 'livros' and key == 'CAPA_URL' %}
+                                <td>
+                                    <div class="book-cover">
+                                        {% if row['CAPA_URL'] %}
+                                            <img
+                                                src="{{ row['CAPA_URL'] }}"
+                                                alt="Capa de {{ row['TITULO'] }}"
+                                                loading="lazy"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='grid'"
+                                            >
+                                            <span style="display:none">▤</span>
+                                        {% else %}
+                                            <span>▤</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                            {% elif key == 'PRECO' %}
+                                <td>{{ row[key]|brl }}</td>
+
+                            {% elif key == 'DATA_NASCI' %}
+                                <td>{{ row[key]|brdate }}</td>
+
+                            {% else %}
+                                <td class="{{ 'primary-cell' if loop.first or key in ['TITULO', 'NOME'] else '' }}">
+                                    {{ row[key] or '—' }}
+                                </td>
+                            {% endif %}
+
+                        {% endfor %}
+
+                        <td>
+                            <div class="row-actions">
+                                <a
+                                    class="action-link"
+                                    href="{{ url_for(entity, edit=row[cfg['pk']], q=search_term) }}"
+                                >
+                                    Editar
+                                </a>
+
+                                <form
+                                    method="post"
+                                    action="{{ url_for('delete_record', entity=entity, record_id=row[cfg['pk']]) }}"
+                                    onsubmit="return confirm('Deseja excluir este registro?')"
+                                >
+                                    <button class="action-delete" type="submit">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                {% else %}
+                    <tr>
+                        <td
+                            colspan="{{ cfg['headers']|length + 1 }}"
+                            class="empty-state"
+                        >
+                            Nenhum registro encontrado.
+
+                            {% if search_term %}
+                                <a href="{{ url_for(entity) }}">
+                                    Limpar pesquisa
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}
